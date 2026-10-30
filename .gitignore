@@ -1,6 +1,45 @@
-*.csv
-.ipynb_checkpoints/
-__pycache__/
-.DS_Store
+
+# Python environments
+venv/
 .venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Secrets
 .env
+.streamlit/secrets.toml
+
+# Generated data files: ignored by default
+*.csv
+
+# Allow the small, aggregated V3 metrics file
+!v3-ai-app/metrics_summary.csv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit API secrets
+**/.streamlit/secrets.toml
+
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Secrets
+.env
+.env.*
+**/.streamlit/secrets.toml
+
+# Editor files
+.vscode/
+.idea/
+
+# Temporary backups
+*.step6-backup
