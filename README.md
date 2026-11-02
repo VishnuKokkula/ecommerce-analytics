@@ -199,6 +199,12 @@ The V3 application uses a small, checked-in `metrics_summary.csv` file rather th
   <img src="./Ai%20app%20demo.gif" alt="Streamlit AI App Demo" width="850">
 </p>
 
+<p align="center">
+  <img src="v3-ai-app/Screenshot%202026-10-30%20224839.png"
+       alt="Streamlit AI Analytics Dashboard"
+       width="850">
+</p>
+
 ### Application behavior
 
 1. `app.py` loads and validates the required columns in `metrics_summary.csv`.
@@ -214,6 +220,8 @@ The V3 application uses a small, checked-in `metrics_summary.csv` file rather th
 1. The AI instructions require answers to use only the supplied aggregated metrics and to distinguish unavailable metrics from verified results.
 
 The application does not send the raw order or customer CSV files to the API.
+
+
 
 ### V3 Metrics
 
