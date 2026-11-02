@@ -1,228 +1,377 @@
-# E-commerce Analytics — Olist Brazil
+# 📊 E-commerce Analytics — Olist Brazil
 
-An end-to-end analytics project exploring Brazilian e-commerce data using Excel, Power BI, Python, and a Streamlit application with AI-assisted explanations.
+### *Tracing item sales, order volume, customer-state performance, and delivery variance across Excel, Power BI, and Streamlit*
 
-## Project Overview
+---
+![Project Architecture Diagram](./architecture%20diagram.png)
 
-This project analyzes the Olist Brazilian E-Commerce Public Dataset, progressing through three versions:
+## 📌 Project Overview
 
-- **V1 — Excel Analytics:** Data exploration and analysis using Excel and Power Query.
-- **V2 — Power BI Analytics:** Interactive dashboards for exploring sales, orders, product categories, geography, and delivery performance.
-- **V3 — AI-Assisted Analytics:** A Streamlit application that calculates supported metrics in Python and uses Groq to explain verified results in natural language.
+This repository contains three versions of an analysis of the **Brazilian E-Commerce Public Dataset by Olist**:
 
-The goal is to demonstrate a practical workflow connecting data preparation, business intelligence, deterministic calculations, and an AI-assisted interface.
+- **V1 — Excel Analytics:** Order-level and item-level analysis using an Excel workbook with prepared tables and pivot summaries.
 
-## Repository Structure
+- **V2 — Power BI Analytics:** An interactive dashboard documented through project notes and dashboard screenshots.
 
-```text
+- **V3 — AI-Assisted Analytics:** A Streamlit application that reads a checked-in aggregated metrics CSV, calculates supported summaries in Python, and uses the Groq API to explain those metrics in natural language.
+
+The project focuses on item sales, order volume, product categories, customer states, and the difference between actual and estimated delivery dates.
+
+
+---
+
+## 🧩 Key Objectives
+
+| Primary questions | Analysis covered |
+| --- | --- |
+| Which product categories account for the largest item sales? | Category-level item sales and top-category rankings |
+| How does delivery timing vary across Brazil? | Average delivery variance by customer state |
+| How does order volume change over time? | Monthly order volume and month-over-month growth in the Excel analysis |
+| How can the verified metrics be explored conversationally? | Streamlit tables, charts, metric definitions, and an optional Groq-powered question-answering section |
+
+> **Metric scope:** Item sales are calculated from order-item `price` values. They exclude freight and should not be interpreted as profit.
+
+---
+
+## 🏗️ Analysis Flow
+
+```
+Olist Brazilian E-Commerce Dataset
+                │
+                ▼
+      Excel preparation and analysis
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+   V1 Excel        V2 Power BI
+        │                │
+        └───────┬────────┘
+                ▼
+   Aggregated metrics_summary.csv
+                │
+                ▼
+        V3 Streamlit application
+                │
+                ▼
+ Optional Groq explanation of the
+ supported aggregated metrics
+```
+
+The repository currently includes the analysis outputs and the V3 application inputs. The raw Olist CSV files used by `build_metrics.py` and the editable Power BI `.pbix` file are not included in the checked-in repository.
+
+---
+
+## 📁 Repository Structure
+
+```
 ecommerce-analytics/
 ├── v1-excel/
-│   ├── findings.md
-│   ├── screenshot-v1.png
-│   └── track-a-v1-analysis.xlsx
+│   ├── findings.md                    # Written findings and limitations
+│   ├── screenshot-v1.png             # Excel analysis preview
+│   └── track-a-v1-analysis.xlsx      # Excel workbook
 ├── v2-powerbi/
-│   ├── notes.md
-│   ├── screenshot-v2.png
-│   └── track-a-v2-dashboard.png
+│   ├── notes.md                       # Dashboard scope and version notes
+│   ├── screenshot-v2.png             # Power BI overview preview
+│   └── track-a-v2-dashboard.png      # Power BI dashboard image
 ├── v3-ai-app/
-│   ├── app.py
-│   ├── analytics.py
-│   ├── build_metrics.py
-│   ├── metrics_summary.csv
-│   ├── requirements.txt
-│   └── .streamlit/
-│       └── secrets.toml.example
+│   ├── .streamlit/
+│   │   └── secrets.toml.example       # Example Groq secret configuration
+│   ├── analytics.py                   # Validated metric functions
+│   ├── app.py                         # Streamlit application
+│   ├── build_metrics.py               # Builds the aggregated metrics CSV
+│   ├── metrics_summary.csv            # Checked-in aggregated metrics
+│   └── requirements.txt               # Python dependencies
 ├── .gitignore
 └── README.md
 ```
 
-The repository may contain additional supporting files. The local virtual environment, API secrets, Python cache, and temporary backups are excluded from version control.
+The repository does not contain `v1-excel/raw-data/`, although `v3-ai-app/build_metrics.py` expects source CSVs in that path when rebuilding `metrics_summary.csv`.
 
-## Dataset
+---
 
-**Brazilian E-Commerce Public Dataset by Olist**
+## 🗂️ Dataset
 
-Source: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+The analysis is based on the **Brazilian E-Commerce Public Dataset by Olist**.
 
-The dataset contains records related to Brazilian e-commerce orders, items, products, customers, sellers, payments, reviews, and delivery.
+- Dataset source: [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
-Refer to the original dataset page for its license and usage terms.
+- Geography: Brazil
 
-## V1 — Excel Analytics
+- Analysis entities represented in the project: orders, order items, products, customers, product-category translations, and delivery dates
 
-The first version uses Excel and Power Query to prepare and analyze the dataset.
+Refer to the original dataset page for the dataset license and terms of use.
 
-Included artifacts:
+---
 
-- Excel analysis workbook
-- Findings document
-- Screenshot of the analysis
+## 📈 V1 — Excel Analytics
 
-See [`v1-excel/findings.md`](v1-excel/findings.md).
+The Excel workbook contains the following sheets:
 
-## V2 — Power BI Analytics
+| Sheet | Contents |
+| --- | --- |
+| `OrderAnalysis` | Order-level fields including order status, purchase and delivery timestamps, customer state, delivery variance, and order month |
+| `SalesItems` | Order-item fields including product, seller, price, freight value, and translated category |
+| `Pivot_Revenue` | Top product categories by item sales |
+| `Pivot_MoM` | Monthly order volume and month-over-month growth formulas |
+| `Pivot_Delivery` | Average delivery variance by Brazilian state |
+| `Sheet1` | Empty worksheet in the checked-in workbook |
 
-The second version explores the data through an interactive Power BI dashboard.
+### V1 Definitions
 
-The documented dashboard features include:
+- **Item sales:** sum of order-item `price`; freight is excluded.
 
-- KPI cards for orders, item sales, customers, and delivery variance
+- **Delivery variance:** actual customer delivery date minus estimated delivery date.
+
+- **Negative delivery variance:** delivered earlier than estimated.
+
+- **Positive delivery variance:** delivered later than estimated.
+
+- Orders without usable delivery dates are excluded from delivery-variance averages but remain part of the overall order data.
+
+### V1 Findings
+
+The findings document reports the following results:
+
+- The top 10 product categories generated **R$8,475,957.56**, approximately **62.4%** of total item sales of **R$13,591,643.70**.
+
+- **Health & Beauty** was the largest individual category at **R$1,258,681.34**.
+
+- **Watches & Gifts** followed at **R$1,205,005.68**, and **Bed & Bath Table** at **R$1,036,988.68**.
+
+- Average delivery variance was approximately **−11.2 days** among orders with valid delivery and estimated delivery dates.
+
+- **November 2017** had the highest monthly order volume in the main analysis period, with **7,544 orders** and **62.9%** month-over-month growth from October.
+
+- **1,627 order-item rows** had no translated product category and represented **R$185,049.76** in item sales. These rows were retained as a data-quality limitation rather than silently removed.
+
+The detailed source is [`v1-excel/findings.md`](v1-excel/findings.md).
+
+### V1 Preview
+![Excel Analytics Dashboard](v1-excel/screenshot-v1.png)
+
+---
+
+## 📊 V2 — Power BI Analytics
+
+The V2 notes describe a Power BI dashboard built around connected Orders, OrderItems, Products, Customers, CategoryTranslation, and Date data.
+
+### Documented dashboard areas
+
+- KPI cards for total orders, item sales, customers, and average delivery variance
+
 - Item sales by product category
-- Monthly order-volume trends
-- Delivery variance by Brazilian state
-- Top-city analysis
-- Date, state, product-category, and customer-city slicers
+
+- Monthly order-volume trend
+
+- Average delivery variance by Brazilian state
+
+- Top-city item sales and order-volume analysis
+
+- Date, state, product-category, and customer-city filters
+
 - Category-to-product and state-to-city drill-down
-- Cross-filtering and interactive exploration
-- An insights page and data dictionary
 
-Screenshots and project notes are available in [`v2-powerbi/`](v2-powerbi/).
+- Cross-filtering across visuals
 
-The repository currently includes dashboard screenshots and notes; an editable Power BI `.pbix` file is not listed among the included artifacts.
+- An Insights & Analytics page
 
-## V3 — AI-Assisted Analytics
+- A Data Dictionary page
 
-The third version uses Python for supported metric calculations and Streamlit for the user interface. Groq provides natural-language explanations for supported analytical results.
+The repository includes dashboard screenshots and notes. It does **not** include the editable Power BI `.pbix` file or a live Power BI link.
 
-Key files:
+### V2 Preview
 
-- `app.py` — Streamlit application and user interaction
-- `analytics.py` — Metric loading, validation, and supported calculations
-- `build_metrics.py` — Logic for building aggregated metrics
-- `metrics_summary.csv` — Aggregated data consumed by the application
-- `requirements.txt` — Python dependencies
-- `.streamlit/secrets.toml.example` — Safe template for local API configuration
+![Power BI Analytics Dashboard](v2-powerbi/track-a-v2-dashboard.png)
 
-### Metric Definitions
+The dashboard images included in the repository show an overview with KPI cards, category sales, monthly order volume, top cities, state-level delivery variance, filters, and an Insights & Analytics area.
 
-| Metric | Definition |
-|---|---|
-| Item sales | Sum of order-item prices, excluding freight |
-| Order count | Number of orders represented by the relevant aggregation |
-| Delivery variance | Actual customer delivery date minus estimated delivery date |
-| Negative delivery variance | Delivery occurred earlier than estimated |
-| Positive delivery variance | Delivery occurred later than estimated |
+The detailed source is [`v2-powerbi/notes.md`](v2-powerbi/notes.md).
 
-**Item sales are not profit.** The project should not be interpreted as measuring profit unless cost and expense data are incorporated into an explicit profit calculation.
+---
 
-The current overall row in `metrics_summary.csv` reports:
+## 🤖 V3 — AI-Assisted Streamlit Analytics
 
-- **Item sales:** R$13,591,643.70
-- **Orders:** 99,441
-- **Average delivery variance:** −11.18 days
+The V3 application uses a small, checked-in `metrics_summary.csv` file rather than loading the raw order and customer CSV files at runtime.
 
-These figures describe the current aggregated metrics file. Comparisons across versions require consistent filters, aggregation logic, and metric definitions.
+### V3 Preview
 
-### Run the Application Locally
+<p align="center">
+  <img src="./Ai%20app%20demo.gif" alt="Streamlit AI App Demo" width="850">
+</p>
 
-#### 1. Clone the repository
+### Application behavior
+
+1. `app.py` loads and validates the required columns in `metrics_summary.csv`.
+
+1. The metrics are separated into `category`, `state`, and `overall` aggregation levels.
+
+1. Streamlit displays performance KPIs, category tables and charts, state tables and charts, initial observations, and metric limitations.
+
+1. Users can optionally enter a Groq API key through Streamlit secrets or the session interface.
+
+1. The application sends the question and aggregated metrics CSV to Groq through an OpenAI-compatible client endpoint.
+
+1. The AI instructions require answers to use only the supplied aggregated metrics and to distinguish unavailable metrics from verified results.
+
+The application does not send the raw order or customer CSV files to the API.
+
+### V3 Metrics
+
+| Field | Meaning |
+| --- | --- |
+| `level` | `category`, `state`, or `overall` |
+| `dimension` | Product category, Brazilian state code, or `All orders` |
+| `item_sales_brl` | Sum of order-item prices in Brazilian reais; freight excluded |
+| `order_count` | Distinct order count for the represented aggregation |
+| `avg_delivery_variance_days` | Actual delivery date minus estimated delivery date, in days |
+
+### Current overall row
+
+The checked-in `metrics_summary.csv` reports:
+
+| Metric | Value |
+| --- | --- |
+| Item sales | R$13,591,643.70 |
+| Distinct orders | 99,441 |
+| Average delivery variance | −11.18 days |
+
+These values describe the checked-in aggregated metrics file. They should not be compared with another version unless the filters, source data, aggregation logic, and metric definitions are aligned.
+
+### V3 Files
+
+| File | Responsibility |
+| --- | --- |
+| `app.py` | Streamlit UI, CSV loading, tables, charts, metric explanations, and Groq question answering |
+| `analytics.py` | CSV validation, top-category ranking, overall metrics, and sales-difference calculation |
+| `build_metrics.py` | Reads raw Olist CSVs, joins products and translations, calculates category/state/overall metrics, and writes the summary CSV |
+| `metrics_summary.csv` | Aggregated data consumed by the app |
+| `requirements.txt` | `streamlit`, `pandas`, and `openai` dependencies |
+| `.streamlit/secrets.toml.example` | Example configuration for `GROQ_API_KEY` |
+
+---
+
+## 🚀 Run the Streamlit Application
+
+### Prerequisites
+
+- Python installed locally
+
+- The repository cloned
+
+- Dependencies from `v3-ai-app/requirements.txt`
+
+- A Groq API key only if using the question-answering feature
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/VishnuKokkula/ecommerce-analytics.git
 cd ecommerce-analytics/v3-ai-app
 ```
 
-#### 2. Create a virtual environment
+### 2. Create and activate a virtual environment
 
-Windows PowerShell:
-
-```powershell
-py -m venv venv
-.\venv\Scripts\Activate.ps1
+```bash
+python -m venv .venv
 ```
 
-If PowerShell prevents activation, use `.\venv\Scripts\python.exe` to run Python commands directly.
+**Windows PowerShell**
 
-#### 3. Install dependencies
+```
+.venv\Scripts\Activate.ps1
+```
 
-```powershell
+**macOS / Linux**
+
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-#### 4. Configure the Groq API key
+### 4. Configure the optional Groq key
 
-Create a local secrets file by copying the example:
+Copy the example file to a local secrets file:
 
-```powershell
-Copy-Item .\.streamlit\secrets.toml.example .\.streamlit\secrets.toml
-notepad .\.streamlit\secrets.toml
+```bash
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 ```
 
-Replace the placeholder with your own Groq API key:
+Set the key in `.streamlit/secrets.toml`:
 
-```toml
+```
 GROQ_API_KEY = "YOUR_GROQ_API_KEY"
 ```
 
-Get an API key from the official Groq Console: https://console.groq.com/
+The application also allows a key to be entered for the current Streamlit session. Do not commit the real `secrets.toml` file.
 
-Never commit the real `secrets.toml` file or put an API key directly into source code.
+### 5. Start Streamlit
 
-#### 5. Start Streamlit
-
-```powershell
+```bash
 python -m streamlit run app.py
 ```
 
-Open the local URL shown in the terminal.
+Open the local URL displayed by Streamlit.
 
-### How the AI-Assisted Workflow Works
+> The application can use the checked-in `metrics_summary.csv` without the raw dataset. Rebuilding the CSV requires the raw Olist files in the paths expected by `build_metrics.py`; those files are not included in this repository.
 
-1. The application loads aggregated metrics from `metrics_summary.csv`.
-2. Python validates and calculates supported results.
-3. Groq receives the calculated results and a request to explain them.
-4. Streamlit displays the response.
+---
 
-The intended design separates numerical calculations from language generation. Unsupported questions should not be presented as verified answers. AI-generated explanations should not change the calculated values or introduce unsupported claims.
+## 🛠️ Tech Stack
 
-### Rebuilding Metrics
+| Component | Technology |
+| --- | --- |
+| Spreadsheet analysis | Microsoft Excel / Power Query workbook artifacts |
+| Dashboard analysis | Microsoft Power BI |
+| Application UI | Streamlit |
+| Data processing | Python and pandas |
+| AI interface | Groq API through the OpenAI-compatible Python client |
+| Stored V3 input | Aggregated CSV |
 
-`build_metrics.py` contains the metric-building logic. Review the script's expected source-data paths and input files before rebuilding the aggregated CSV.
+---
 
-The source dataset files are not required to run the Streamlit app when the precomputed `metrics_summary.csv` is available.
+## ⚠️ Limitations and Interpretation Notes
 
-Do not replace a validated metrics file without checking the resulting totals and metric definitions.
+- Item sales are not profit and exclude freight.
 
-## Troubleshooting
+- Category and state rows are separate views of the same business data; they must not be added together.
 
-**The app cannot find `metrics_summary.csv`**
+- Category and state order counts are not additive national order totals.
 
-Run Streamlit from `v3-ai-app` and verify that the CSV is present beside `app.py`.
+- A national delivery average should not be calculated as a simple average of state averages.
 
-**Groq requests fail**
+- Orders without usable delivery dates cannot contribute to delivery-variance averages.
 
-Check your API key, model configuration, account access, API credits, rate limits, and network connection.
+- The `Unknown / untranslated` category is retained in the V3 metrics rather than silently discarded.
 
-**The AI response is empty**
+- The analysis is descriptive and does not establish causation, profitability, customer satisfaction, or logistics quality by itself.
 
-Inspect the API response and finish reason. A request completing without an API error does not guarantee readable response text.
+- The V3 AI assistant is limited to the aggregated data and definitions supplied in the application context.
 
-**Excel and Power BI totals differ**
+- The raw source data and editable Power BI file are not checked into the repository, so the full preparation and dashboard-editing workflow cannot be reproduced from the repository alone.
 
-Compare filters, order-item aggregation, freight treatment, order-count logic, and delivery-date calculations before drawing conclusions.
 
-## Limitations
+---
 
-- Results depend on the quality and scope of the underlying dataset.
-- Item sales are not profit.
-- Aggregated metrics cannot answer every question about individual orders or customers.
-- AI explanations are limited by the calculations and context supplied to the model.
-- Only implemented and verified calculation paths should be treated as supported analytical answers.
-
-## Potential Improvements
-
-- Additional deterministic analytical question types
-- Automated data-quality and metric reconciliation tests
-- More reproducible dependency management
-- Expanded documented business metrics
-- Improved automated testing
-
-## Author
+## 👤 Author
 
 **VishnuTeja Kokkula**
 
-Computer Science graduate interested in data analytics, business intelligence, and AI-powered applications.
+- GitHub: [VishnuKokkula](https://github.com/VishnuKokkula)
 
-- GitHub: https://github.com/VishnuKokkula
-- Repository: https://github.com/VishnuKokkula/ecommerce-analytics
+- Repository: [ecommerce-analytics](https://github.com/VishnuKokkula/ecommerce-analytics)
+
+---
+
+## 📄 Project Notes
+
+The detailed findings and version notes remain available in:
+
+- [`v1-excel/findings.md`](v1-excel/findings.md)
+
+- [`v2-powerbi/notes.md`](v2-powerbi/notes.md)
